@@ -1,0 +1,62 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1
+    container_name: locci-auth-keycloak
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_HOSTNAME: localhost
+      KC_HTTP_PORT: 8080
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+    ports:
+      - "5080:8080"
+    volumes:
+      # Custom login themes — match the SvelteKit app's brand.
+      #   locci        → simple single-card reskin
+      #   locci-split  → full split-screen (dark hero panel + card)
+      # Pick one in Realm settings → Themes → Login theme.
+      - ./keycloak/themes:/opt/keycloak/themes:ro
+      # Reference: to mount a single theme instead of the whole dir, use e.g.
+      # - ./keycloak/themes/locci:/opt/keycloak/themes/locci:ro
+      # - ./keycloak/themes/locci-split:/opt/keycloak/themes/locci-split:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - locci-auth-network
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: locci-auth-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - locci-auth-network
+
+volumes:
+  postgres_data:
+    name: locci-auth-pg-data
+    external: true
+
+networks:
+  locci-auth-network:
+    name: locci-auth-network
+    driver: bridge
+    external: true

@@ -1,0 +1,77 @@
+name: inngest
+
+# Self-hosted Inngest for production on the thanos homelab (~/src/inngest).
+#
+# Runs `inngest start` (NOT `inngest dev`) backed by external Postgres + Redis.
+# The SvelteKit app is deployed separately and is intentionally NOT in this
+# stack — it points back at this server via INNGEST_BASE_URL and the Inngest
+# server calls the app's /api/inngest endpoint via INNGEST_SDK_URL.
+#
+# Exposed later through Cloudflare Tunnels; keep server<->app traffic internal.
+services:
+  inngest:
+    image: inngest/inngest:latest
+    container_name: inngest-server
+    command:
+      - inngest
+      - start
+      - --postgres-uri=postgres://inngest:${POSTGRES_PASSWORD:-inngest}@postgres:5432/inngest?sslmode=disable
+      - --redis-uri=redis://redis:6379
+    ports:
+      - "8288:8288" # Event API + Dashboard UI
+      - "8289:8289" # Internal connect/executor port
+    environment:
+      # Mutual auth between the Inngest server and your SvelteKit app.
+      INNGEST_EVENT_KEY: ${INNGEST_EVENT_KEY}
+      INNGEST_SIGNING_KEY: ${INNGEST_SIGNING_KEY}
+      # Where the Inngest server reaches your SvelteKit app to register/run
+      # functions. Set to the app's reachable URL on the homelab network.
+      INNGEST_SDK_URL: ${INNGEST_SDK_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - inngest-network
+
+  postgres:
+    image: postgres:16
+    container_name: inngest-postgres
+    environment:
+      POSTGRES_USER: inngest
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-inngest}
+      POSTGRES_DB: inngest
+    volumes:
+      - pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inngest"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - inngest-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: inngest-redis
+    # appendonly persists the queue across restarts (Redis is otherwise ephemeral).
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis:/data
+    restart: unless-stopped
+    networks:
+      - inngest-network
+
+volumes:
+  pg:
+    name: inngest-pg-data
+  redis:
+    name: inngest-redis-data
+
+networks:
+  inngest-network:
+    name: inngest-network
+    driver: bridge

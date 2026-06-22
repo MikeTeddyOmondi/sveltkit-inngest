@@ -1,0 +1,330 @@
+/* ==========================================================================
+   Locci SPLIT login theme — restyles keycloak.v2 (PatternFly v5) into the
+   app's split-screen login: dark hero panel (left) + card (right).
+   The left .locci-hero panel is injected by this theme's template.ftl.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+	--ink: #0d0d0f;
+	--ink-2: #3a3a45;
+	--ink-3: #7a7a8a;
+	--paper: #f5f4f0;
+	--paper-2: #eceae3;
+	--paper-3: #e0ddd3;
+	--accent: #e8450a;
+	--accent-2: #ff6b35;
+	--success: #1a7a4a;
+	--mono: 'DM Mono', monospace;
+	--sans: 'Syne', sans-serif;
+	--radius: 4px;
+	--radius-lg: 8px;
+}
+
+html.login-pf,
+html,
+body {
+	color-scheme: light !important;
+	background: var(--paper) !important;
+	font-family: var(--sans) !important;
+	color: var(--ink) !important;
+	height: 100%;
+}
+
+/* ---- Split layout: hero (left) | container (right) ---------------------- */
+.pf-v5-c-login {
+	display: grid !important;
+	grid-template-columns: 1fr 1fr !important;
+	align-items: stretch !important;
+	min-height: 100vh !important;
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	gap: 0 !important;
+}
+
+/* ---- Left hero panel ---------------------------------------------------- */
+.locci-hero {
+	background: var(--ink);
+	color: var(--paper);
+	padding: 3rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+	overflow: hidden;
+}
+.locci-hero::before {
+	content: '';
+	position: absolute;
+	top: -80px;
+	right: -80px;
+	width: 320px;
+	height: 320px;
+	border-radius: 50%;
+	background: var(--accent);
+	opacity: 0.08;
+	pointer-events: none;
+}
+.locci-hero::after {
+	content: '';
+	position: absolute;
+	bottom: -60px;
+	left: -60px;
+	width: 240px;
+	height: 240px;
+	border-radius: 50%;
+	background: var(--accent);
+	opacity: 0.05;
+	pointer-events: none;
+}
+.locci-hero__brand {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	position: relative;
+	z-index: 1;
+}
+.locci-hero__logo {
+	width: 36px;
+	height: 36px;
+	background: var(--accent);
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 800;
+	font-size: 1.1rem;
+	border-radius: var(--radius);
+	flex-shrink: 0;
+}
+.locci-hero__name {
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.2em;
+	color: var(--paper-3);
+}
+.locci-hero__center {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	padding: 3rem 0;
+	position: relative;
+	z-index: 1;
+}
+.locci-hero__tag {
+	font-family: var(--mono);
+	font-size: 0.65rem;
+	letter-spacing: 0.15em;
+	color: var(--accent-2);
+}
+.locci-hero h2 {
+	font-size: clamp(2rem, 3vw, 3rem);
+	font-weight: 800;
+	line-height: 1.05;
+	letter-spacing: -0.02em;
+	color: var(--paper);
+	margin: 0;
+}
+.locci-hero__sub {
+	font-family: var(--mono);
+	font-size: 0.85rem;
+	line-height: 1.7;
+	color: var(--ink-3);
+	font-weight: 300;
+	margin: 0;
+}
+.locci-hero__pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	position: relative;
+	z-index: 1;
+}
+.locci-hero__pill {
+	font-family: var(--mono);
+	font-size: 0.65rem;
+	padding: 0.3rem 0.7rem;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 99px;
+	color: var(--ink-3);
+	letter-spacing: 0.05em;
+}
+
+/* ---- Right column: hosts header + card ---------------------------------- */
+.pf-v5-c-login__container {
+	display: flex !important;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background: var(--paper);
+	padding: 2rem !important;
+	max-width: none !important;
+	width: 100% !important;
+	gap: 1rem;
+}
+
+/* Hide the small realm-name header — the hero panel already carries the brand */
+.pf-v5-c-login__header { display: none !important; }
+
+/* ---- The login card ----------------------------------------------------- */
+.pf-v5-c-login__main {
+	width: 100% !important;
+	max-width: 420px !important;
+	/* PatternFly sets align-self on the card, overriding the container's
+	   align-items:center — force it back to centered (horizontally). */
+	align-self: center !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	background: #ffffff !important;
+	border: 1px solid var(--paper-3) !important;
+	border-radius: var(--radius-lg) !important;
+	box-shadow: 0 2px 24px rgba(0, 0, 0, 0.06) !important;
+	overflow: hidden;
+}
+
+/* macOS-style traffic-light dots strip at the top of the card */
+.pf-v5-c-login__main::before {
+	content: '';
+	display: block;
+	height: 38px;
+	background:
+		radial-gradient(circle 5px at 18px 19px, #ff5f57 98%, transparent),
+		radial-gradient(circle 5px at 38px 19px, #febc2e 98%, transparent),
+		radial-gradient(circle 5px at 58px 19px, #28c840 98%, transparent),
+		var(--paper-2);
+	border-bottom: 1px solid var(--paper-3);
+}
+
+.pf-v5-c-login__main-header,
+.pf-v5-c-login__main-body {
+	padding-left: 2rem !important;
+	padding-right: 2rem !important;
+}
+.pf-v5-c-login__main-body { padding-bottom: 2rem !important; }
+
+/* ---- Title -------------------------------------------------------------- */
+#kc-page-title {
+	font-family: var(--sans) !important;
+	font-weight: 800 !important;
+	letter-spacing: -0.02em;
+	color: var(--ink) !important;
+}
+
+/* ---- Labels, helper text ------------------------------------------------ */
+.pf-v5-c-form__label-text,
+.pf-v5-c-form__helper-text,
+label {
+	font-family: var(--mono) !important;
+	color: var(--ink-3) !important;
+	font-size: 0.72rem !important;
+}
+
+/* ---- Inputs ------------------------------------------------------------- */
+.pf-v5-c-form-control,
+.pf-v5-c-form-control input,
+input[type='text'],
+input[type='password'],
+input[type='email'],
+#username,
+#password {
+	font-family: var(--mono) !important;
+	background: #ffffff !important;
+	color: var(--ink) !important;
+	border: 1px solid var(--paper-3) !important;
+	border-radius: var(--radius) !important;
+}
+.pf-v5-c-form-control:focus-within,
+input:focus {
+	border-color: var(--accent) !important;
+	outline: none !important;
+	box-shadow: 0 0 0 2px rgba(232, 69, 10, 0.12) !important;
+}
+/* PatternFly draws the focus underline via an ::after element + CSS var — recolor
+   it from its default blue to our accent. */
+.pf-v5-c-form-control {
+	--pf-v5-c-form-control--after--BorderBottomColor: var(--accent) !important;
+	--pf-v5-c-form-control--focus--after--BorderBottomColor: var(--accent) !important;
+}
+.pf-v5-c-form-control::after,
+.pf-v5-c-form-control:focus-within::after {
+	border-bottom-color: var(--accent) !important;
+}
+
+/* ---- Password reveal / input-group control buttons (ghost style) -------- */
+.pf-v5-c-input-group .pf-v5-c-button,
+.pf-v5-c-button.pf-m-control,
+button[aria-label='Show password'],
+button[aria-label='Hide password'] {
+	background: #ffffff !important;
+	color: var(--ink) !important;
+	border: 1px solid var(--paper-3) !important;
+	border-radius: var(--radius) !important;
+}
+.pf-v5-c-input-group .pf-v5-c-button:hover,
+.pf-v5-c-button.pf-m-control:hover {
+	border-color: var(--accent) !important;
+	color: var(--accent) !important;
+}
+
+/* ---- Primary button (dark, accent on hover) ----------------------------- */
+.pf-v5-c-button.pf-m-primary,
+#kc-login,
+input[type='submit'] {
+	background: var(--ink) !important;
+	color: var(--paper) !important;
+	border: none !important;
+	border-radius: var(--radius) !important;
+	font-family: var(--sans) !important;
+	font-weight: 600 !important;
+	letter-spacing: 0.01em;
+	transition: background 0.15s, transform 0.1s;
+}
+.pf-v5-c-button.pf-m-primary:hover,
+#kc-login:hover {
+	background: var(--accent) !important;
+}
+.pf-v5-c-button.pf-m-primary:active,
+#kc-login:active {
+	transform: scale(0.99);
+}
+
+/* Secondary / link-style buttons */
+.pf-v5-c-button.pf-m-secondary,
+.pf-v5-c-button.pf-m-link {
+	color: var(--accent) !important;
+	background: transparent !important;
+}
+
+/* ---- Links -------------------------------------------------------------- */
+a,
+#kc-registration a,
+#kc-info-wrapper a,
+.pf-v5-c-login__main-footer a {
+	color: var(--accent) !important;
+	font-family: var(--mono) !important;
+}
+a:hover { color: var(--accent-2) !important; }
+
+#kc-social-providers a,
+.pf-v5-c-login__main-footer-band-item a {
+	font-family: var(--mono) !important;
+	border-radius: var(--radius) !important;
+}
+
+.pf-v5-c-alert {
+	border-radius: var(--radius) !important;
+	font-family: var(--mono) !important;
+}
+
+/* ---- Responsive: stack to single column, hide hero ---------------------- */
+@media (max-width: 768px) {
+	.pf-v5-c-login {
+		grid-template-columns: 1fr !important;
+	}
+	.locci-hero {
+		display: none !important;
+	}
+}

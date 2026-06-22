@@ -1,0 +1,176 @@
+/* ==========================================================================
+   Locci login theme — restyles keycloak.v2 (PatternFly v5) to match the
+   SvelteKit app (paper/ink/accent palette, Syne + DM Mono fonts, card look).
+   Loaded after the parent styles, so these win.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+	--ink: #0d0d0f;
+	--ink-2: #3a3a45;
+	--ink-3: #7a7a8a;
+	--paper: #f5f4f0;
+	--paper-2: #eceae3;
+	--paper-3: #e0ddd3;
+	--accent: #e8450a;
+	--accent-2: #ff6b35;
+	--success: #1a7a4a;
+	--mono: 'DM Mono', monospace;
+	--sans: 'Syne', sans-serif;
+	--radius: 4px;
+	--radius-lg: 8px;
+}
+
+/* Force light mode (keycloak.v2 may apply pf-v5-theme-dark) and set the page
+   background to paper. */
+html.login-pf,
+html,
+body {
+	color-scheme: light !important;
+	background: var(--paper) !important;
+	font-family: var(--sans) !important;
+	color: var(--ink) !important;
+}
+
+.pf-v5-c-login,
+.pf-v5-c-login__container {
+	background: var(--paper) !important;
+}
+
+/* ---- Brand header: render a LOCCI wordmark above the card ---------------- */
+.pf-v5-c-login__header,
+#kc-header {
+	display: flex;
+	justify-content: center;
+}
+
+#kc-header-wrapper,
+.pf-v5-c-brand {
+	font-family: var(--sans) !important;
+	font-weight: 800 !important;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--ink) !important;
+	font-size: 1.1rem !important;
+	padding: 0.5rem 0 !important;
+}
+
+/* ---- The login card ----------------------------------------------------- */
+.pf-v5-c-login__main {
+	background: #ffffff !important;
+	border: 1px solid var(--paper-3) !important;
+	border-radius: var(--radius-lg) !important;
+	box-shadow: 0 2px 24px rgba(0, 0, 0, 0.06) !important;
+	overflow: hidden;
+}
+
+/* macOS-style traffic-light dots strip at the top of the card */
+.pf-v5-c-login__main::before {
+	content: '';
+	display: block;
+	height: 38px;
+	background:
+		radial-gradient(circle 5px at 18px 19px, #ff5f57 98%, transparent) ,
+		radial-gradient(circle 5px at 38px 19px, #febc2e 98%, transparent),
+		radial-gradient(circle 5px at 58px 19px, #28c840 98%, transparent),
+		var(--paper-2);
+	border-bottom: 1px solid var(--paper-3);
+}
+
+.pf-v5-c-login__main-header,
+.pf-v5-c-login__main-body {
+	padding-left: 2rem !important;
+	padding-right: 2rem !important;
+}
+.pf-v5-c-login__main-body { padding-bottom: 2rem !important; }
+
+/* ---- Title -------------------------------------------------------------- */
+#kc-page-title {
+	font-family: var(--sans) !important;
+	font-weight: 800 !important;
+	letter-spacing: -0.02em;
+	color: var(--ink) !important;
+}
+
+/* ---- Labels, helper text ------------------------------------------------ */
+.pf-v5-c-form__label-text,
+.pf-v5-c-form__helper-text,
+label {
+	font-family: var(--mono) !important;
+	color: var(--ink-3) !important;
+	font-size: 0.72rem !important;
+}
+
+/* ---- Inputs ------------------------------------------------------------- */
+.pf-v5-c-form-control,
+.pf-v5-c-form-control input,
+input[type='text'],
+input[type='password'],
+input[type='email'],
+#username,
+#password {
+	font-family: var(--mono) !important;
+	background: #ffffff !important;
+	color: var(--ink) !important;
+	border: 1px solid var(--paper-3) !important;
+	border-radius: var(--radius) !important;
+}
+.pf-v5-c-form-control:focus-within,
+input:focus {
+	border-color: var(--accent) !important;
+	outline: none !important;
+	box-shadow: 0 0 0 2px rgba(232, 69, 10, 0.12) !important;
+}
+
+/* ---- Primary button (dark, accent on hover) ----------------------------- */
+.pf-v5-c-button.pf-m-primary,
+#kc-login,
+input[type='submit'] {
+	background: var(--ink) !important;
+	color: var(--paper) !important;
+	border: none !important;
+	border-radius: var(--radius) !important;
+	font-family: var(--sans) !important;
+	font-weight: 600 !important;
+	letter-spacing: 0.01em;
+	transition: background 0.15s, transform 0.1s;
+}
+.pf-v5-c-button.pf-m-primary:hover,
+#kc-login:hover {
+	background: var(--accent) !important;
+}
+.pf-v5-c-button.pf-m-primary:active,
+#kc-login:active {
+	transform: scale(0.99);
+}
+
+/* Secondary / link-style buttons */
+.pf-v5-c-button.pf-m-secondary,
+.pf-v5-c-button.pf-m-link {
+	color: var(--accent) !important;
+	background: transparent !important;
+}
+
+/* ---- Links -------------------------------------------------------------- */
+a,
+#kc-registration a,
+#kc-info-wrapper a,
+.pf-v5-c-login__main-footer a {
+	color: var(--accent) !important;
+	font-family: var(--mono) !important;
+}
+a:hover { color: var(--accent-2) !important; }
+
+/* ---- Social / identity-provider buttons --------------------------------- */
+#kc-social-providers a,
+.pf-v5-c-login__main-footer-band-item a {
+	font-family: var(--mono) !important;
+	border-radius: var(--radius) !important;
+}
+
+/* ---- Alerts ------------------------------------------------------------- */
+.pf-v5-c-alert {
+	border-radius: var(--radius) !important;
+	font-family: var(--mono) !important;
+}
